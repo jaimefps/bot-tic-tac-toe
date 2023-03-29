@@ -92,8 +92,10 @@ export class OpenAiDataSource {
     const prevState = JSON.parse(boardState) as Board
 
     let attempts = 0
+    const timestamp = Date.now()
     while (attempts < 5) {
       attempts += 1
+      console.log(`root:${timestamp}:attempt:${attempts}`)
       const result = await this.attemptMove(boardState)
       if (result) {
         const {

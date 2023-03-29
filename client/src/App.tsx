@@ -22,18 +22,13 @@ function getClassNames(x: number, y: number, game: GameState) {
   return `box ${active} ${highlight} ${end} ${lx} ${ly}`
 }
 
-function makeBoxProps(
-  x: number,
-  y: number,
-  game: GameState,
-  thinking: boolean
-) {
+function makeBoxProps(x: number, y: number, game: GameState, loading: boolean) {
   const content = game.boardState()[y][x]
   return {
     children: content,
     className: getClassNames(x, y, game),
     onClick: () => game.play({ x, y }),
-    disabled: thinking || Boolean(content ?? game.winState()),
+    disabled: loading || Boolean(content ?? game.winState()),
   }
 }
 
@@ -81,30 +76,9 @@ function App() {
       ) : winDetails ? (
         <h1>Winner: {winDetails.mark}</h1>
       ) : (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-          }}
-        >
-          <div style={{ position: "relative" }}>
-            <h1>
-              <span>Turn: {game.turn()}</span>
-            </h1>
-            {loading && (
-              <img
-                src={Thinking}
-                style={{
-                  position: "absolute",
-                  right: "40%",
-                  top: -18,
-                  height: 16,
-                  width: 14,
-                }}
-              />
-            )}
-          </div>
+        <div className="turn-wrapper">
+          {loading && <img src={Thinking} className="bot-thinking" />}
+          <h1>Turn: {game.turn()}</h1>
         </div>
       )}
 

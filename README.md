@@ -1,4 +1,4 @@
-# Demo fullstack setup
+# Demo chatgpt app
 
 Small repo to introduce Nexus, Prisma, code-gen, and fullstack type-safety. Includes example integration with Firebase authentication.
 

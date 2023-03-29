@@ -26,8 +26,8 @@ const openai = new OpenAIApi(
  */
 // openai
 //   .createFineTune({
-//     model: secrets.openai.ftModel,
-//     training_file: secrets.openai.file2,
+//     model: secrets.openai.getFtModel(),
+//     training_file: secrets.openai.getFile(),
 //   })
 //   .then((res) => {
 //     console.log(JSON.stringify(res.data, null, 2))

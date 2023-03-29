@@ -4,6 +4,19 @@ Small repo to introduce Nexus, Prisma, code-gen, and fullstack type-safety. Incl
 
 ## Start local development
 
+**IMPORTANT**: Get your own chatgpt API key and create a secrets directory with an index file innside the server:
+
+```
+// @ server/secrets/index.ts
+
+export const secrets = {
+  openai: {
+    org: "org-id-here",
+    key: "gpt-api-key-here",
+  },
+}
+```
+
 Make sure you've [installed Docker](https://docs.docker.com/get-docker/) on your machine.
 
 From the root of the project, start the Docker container for the dtb:

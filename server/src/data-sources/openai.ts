@@ -9,13 +9,15 @@ const {
   ChatCompletionRequestMessageRoleEnum,
 } = require("openai")
 
-const configuration = new Configuration({
-  apiKey: secrets.openai.key,
-})
+const openai = new OpenAIApi(
+  new Configuration({
+    apiKey: secrets.openai.key,
+  })
+)
 
-const openai = new OpenAIApi(configuration)
-
-type Attempt = { position: [number, number] }
+type Attempt = {
+  position: [number, number]
+}
 
 export class OpenAiDataSource {
   constructor(protected ctx: Context) {
@@ -89,22 +91,17 @@ export class OpenAiDataSource {
     type Board = [Row, Row, Row]
     const prevState = JSON.parse(boardState) as Board
 
-    let validMove = null
     let attempts = 0
-
-    while (!validMove && attempts < 10) {
+    while (attempts < 5) {
       attempts += 1
-
-      const attempt = await this.attemptMove(boardState)
-
-      if (attempt) {
+      const result = await this.attemptMove(boardState)
+      if (result) {
         const {
           position: [x, y],
-        } = attempt
-
+        } = result
         // only return for valid moves:
         if (prevState[y][x] === null) {
-          return JSON.stringify(attempt)
+          return JSON.stringify(result)
         }
       }
     }
@@ -117,9 +114,8 @@ export class OpenAiDataSource {
           shimAction = JSON.stringify({
             position: [cellIdx, rowIdx],
           })
-
-          console.warn(
-            `Bot failed after ${attempts} attempts, submitting action for first open slot`,
+          console.log(
+            `WARNING: Bot failed after ${attempts} attempts, submitting action for first open slot`,
             shimAction
           )
         }

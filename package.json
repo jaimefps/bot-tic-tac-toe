@@ -8,7 +8,7 @@
     "i": "yarn install --force && run-p -l install:*",
     "install:server": "cd server && yarn install --force",
     "install:client": "cd client && yarn install --force",
-    "dev": "yarn i && yarn migrate && yarn run-p -l dev:*",
+    "dev": "yarn i && yarn run-p -l dev:*",
     "dev:server": "cd server && yarn dev",
     "dev:client": "cd client && yarn dev"
   }

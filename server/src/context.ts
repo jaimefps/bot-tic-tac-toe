@@ -1,9 +1,9 @@
 // import { TaskDataSource } from "./data-sources"
 import { OpenAiDataSource } from "./data-sources/openai"
-import { prisma } from "./prisma"
+// import { prisma } from "./prisma"
 
 export class Context {
-  prisma = prisma
+  // prisma = prisma
   member: MemberInfo
 
   constructor(member: MemberInfo) {

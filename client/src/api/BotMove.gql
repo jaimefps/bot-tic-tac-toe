@@ -1,0 +1,6 @@
+query GetBotMove($boardState: String!) {
+  aiData {
+    id # ensures that the cache refreshes after every bot action
+    move(boardState: $boardState)
+  }
+}

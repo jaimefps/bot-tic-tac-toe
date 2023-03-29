@@ -1,0 +1,5 @@
+{
+    "exec": "run-s dev:schema dev:server",
+    "ext": "ts,js,json",
+    "watch": "src"
+}

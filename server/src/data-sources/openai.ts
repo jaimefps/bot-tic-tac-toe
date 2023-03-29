@@ -15,6 +15,8 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration)
 
+type Attempt = { position: [number, number] }
+
 export class OpenAiDataSource {
   constructor(protected ctx: Context) {
     this.ctx = ctx
@@ -24,7 +26,7 @@ export class OpenAiDataSource {
     return openai.listModels()
   }
 
-  private async attemptMove(boardState: string) {
+  private async attemptMove(boardState: string): Promise<Attempt | null> {
     const prompt = `
     We are playing a game of tic-tac-toe.
     We represent the game with a 2D array.
@@ -38,11 +40,11 @@ export class OpenAiDataSource {
     try {
       const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo-0301",
-        temperature: 0.8,
+        temperature: 0,
         messages: [
           {
             role: ChatCompletionRequestMessageRoleEnum.System,
-            content: "You are an amazing tic tac toe player that never loses.",
+            content: "You are a tic-tac-toe champion, the best in the world.",
           },
           {
             role: ChatCompletionRequestMessageRoleEnum.User,
@@ -64,8 +66,7 @@ export class OpenAiDataSource {
     }
 
     try {
-      // @ts-ignore: try/catch takes care of any issues:
-      const parsed = JSON.parse(botMove?.trim())
+      const parsed: Attempt = JSON.parse(botMove.trim())
       if (
         parsed.position &&
         parsed.position.length === 2 &&
@@ -78,6 +79,8 @@ export class OpenAiDataSource {
     } catch (error) {
       console.log("ERROR: Failed to parse response from bot", botMove)
     }
+
+    return null
   }
 
   async getBotMove(boardState: string) {
@@ -91,18 +94,23 @@ export class OpenAiDataSource {
 
     while (!validMove && attempts < 10) {
       attempts += 1
-      console.log("attempt:", attempts)
+
       const attempt = await this.attemptMove(boardState)
-      const {
-        position: [x, y],
-      } = attempt
-      if (prevState[y][x] === null) {
-        return JSON.stringify(attempt)
+
+      if (attempt) {
+        const {
+          position: [x, y],
+        } = attempt
+
+        // only return for valid moves:
+        if (prevState[y][x] === null) {
+          return JSON.stringify(attempt)
+        }
       }
     }
 
+    // handle if the bot never gave any useful move:
     let shimAction: string
-
     prevState.forEach((row, rowIdx) => {
       row.forEach((_, cellIdx) => {
         if (!shimAction && !prevState[rowIdx][cellIdx]) {
@@ -111,7 +119,7 @@ export class OpenAiDataSource {
           })
 
           console.warn(
-            "Bot failed, submitting action for first open slot",
+            `Bot failed after ${attempts} attempts, submitting action for first open slot`,
             shimAction
           )
         }

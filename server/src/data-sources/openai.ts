@@ -9,6 +9,12 @@ const {
   ChatCompletionRequestMessageRoleEnum,
 } = require("openai")
 
+// import {
+//   Configuration,
+//   OpenAIApi,
+//   ChatCompletionRequestMessageRoleEnum,
+// } from "openai"
+
 const openai = new OpenAIApi(
   new Configuration({
     apiKey: secrets.openai.key,
@@ -16,7 +22,7 @@ const openai = new OpenAIApi(
 )
 
 type Attempt = {
-  position: [number, number]
+  position: { x: number; y: number }
 }
 
 export class OpenAiDataSource {
@@ -29,20 +35,14 @@ export class OpenAiDataSource {
   }
 
   private async attemptMove(boardState: string): Promise<Attempt | null> {
-    const prompt = `
-    We are playing a game of tic-tac-toe.
-    We represent the game with a 2D array.
-    Respond only in JSON form "{ "position": [x, y] }".
-    Do not say any other words. I am X, you are O.
-    What is your next move based on this board state?
-          
-    ${boardState}`
+    const prompt = `We are playing a game of tic-tac-toe. We represent the game with a 2D array. Respond only in JSON form "{ "position": { x, y } }". I am X, you are O. What is your next move based on this board state?
+${boardState}`
 
     let botMove = null
     try {
       const completion = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo-0301",
-        temperature: 0,
+        model: secrets.openai.getFtModel() ?? "gpt-3.5-turbo",
+        temperature: 0.6,
         messages: [
           {
             role: ChatCompletionRequestMessageRoleEnum.System,
@@ -68,11 +68,11 @@ export class OpenAiDataSource {
     }
 
     try {
-      const parsed: Attempt = JSON.parse(botMove.trim())
+      const parsed: Attempt = JSON.parse(botMove!.trim())
       if (
         parsed.position &&
-        parsed.position.length === 2 &&
-        parsed.position.every(
+        Object.keys(parsed.position).length === 2 &&
+        Object.values(parsed.position).every(
           (n: number) => typeof n === "number" && 0 <= n && n <= 2
         )
       ) {
@@ -99,7 +99,7 @@ export class OpenAiDataSource {
       const result = await this.attemptMove(boardState)
       if (result) {
         const {
-          position: [x, y],
+          position: { x, y },
         } = result
         // only return for valid moves:
         if (prevState[y][x] === null) {
@@ -114,7 +114,7 @@ export class OpenAiDataSource {
       row.forEach((_, cellIdx) => {
         if (!shimAction && !prevState[rowIdx][cellIdx]) {
           shimAction = JSON.stringify({
-            position: [cellIdx, rowIdx],
+            position: { x: cellIdx, y: rowIdx },
           })
           console.log(
             `WARNING: Bot failed after ${attempts} attempts, submitting action for first open slot`,

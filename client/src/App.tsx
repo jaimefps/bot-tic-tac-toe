@@ -33,18 +33,15 @@ function makeBoxProps(x: number, y: number, game: GameState, loading: boolean) {
 }
 
 function App() {
+  const [getMove, { data, loading }] = useGetBotMoveLazyQuery()
   const game = useVanillaState(GameState)
   const winDetails = game.winState()
   const playCount = game.playCount()
-
-  const [getMove, { data, loading }] = useGetBotMoveLazyQuery()
-  const [cheated, setCheated] = useState(false)
 
   useEffect(() => {
     if (winDetails) {
       return
     }
-
     if (playCount % 2 !== 0) {
       getMove({
         variables: {
@@ -56,14 +53,13 @@ function App() {
 
   useEffect(() => {
     if (data) {
-      const result = data?.aiData?.move ?? "null"
-      type Move = { position: [number, number] }
-      const move: Move = JSON.parse(result)
-
+      type Move = { position: { x: number; y: number } }
+      const move: Move = JSON.parse(data?.aiData?.move ?? "null")
       if (move) {
+        console.log({ move })
         game.play({
-          x: move.position[0],
-          y: move.position[1],
+          x: move.position.x,
+          y: move.position.y,
         })
       }
     }

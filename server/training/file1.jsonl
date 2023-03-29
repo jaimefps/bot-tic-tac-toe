@@ -1,0 +1,6 @@
+{"prompt":" [[null,null,null],[null,\"X\",\"O\"],[null,\"X\",null]]","completion":" {\"position\":{\"x\":1,\"y\":0}}"}
+{"prompt":" [[null,\"O\",\"X\"],[null,\"X\",\"O\"],[null,\"X\",null]]","completion":" {\"position\":{\"x\":0,\"y\":2}}"}
+{"prompt":" [[\"X\",\"O\",\"X\"],[null,\"X\",\"O\"],[\"O\",\"X\",null]]","completion":" {\"position\":{\"x\":2,\"y\":2}}"}
+{"prompt":" [[null,null,null],[\"X\",\"X\",null],[\"O\",null,null]]","completion":" {\"position\":{\"x\":2,\"y\":1}}"}
+{"prompt":" [[null,\"X\",null],[\"X\",\"X\",\"O\"],[\"O\",\"O\",null]]","completion":" {\"position\":{\"x\":1,\"y\":2}}"}
+{"prompt":" [[null,\"X\",null],[\"X\",\"X\",\"O\"],[\"O\",\"O\",\"X\"]]","completion":" {\"position\":{\"x\":0,\"y\":0}}"}
